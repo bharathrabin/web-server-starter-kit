@@ -16,7 +16,7 @@ proto:
 		--go-grpc_out=gen --go-grpc_opt=paths=source_relative \
 		--grpc-gateway_out=gen --grpc-gateway_opt=paths=source_relative \
 		--openapiv2_out=gen --openapiv2_opt=logtostderr=true \
-		models/v1/models.proto
+		proto/models/v1/models.proto
 
 # Download third party protos (googleapis)
 third-party:

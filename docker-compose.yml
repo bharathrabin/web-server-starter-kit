@@ -1,0 +1,40 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config-development.yaml:/app/config.yaml:ro
+    environment:
+      - CONFIG_FILE=/app/config.yaml
+    depends_on:
+      - postgres
+      - statsd
+    networks:
+      - app-network 
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=myapp_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=devpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+  statsd:
+    image: graphiteapp/graphite-statsd:latest
+    ports:
+      - "8125:8125/udp"  # StatsD
+      - "8080:80"        # Graphite web interface
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge
