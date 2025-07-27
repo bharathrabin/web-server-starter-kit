@@ -1,0 +1,9 @@
+version: v1
+deps:
+  - buf.build/googleapis/googleapis  # For google/api annotations
+lint:
+  use:
+    - DEFAULT
+breaking:
+  use:
+    - FILE
