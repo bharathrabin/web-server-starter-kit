@@ -16,6 +16,8 @@ require (
 
 require (
 	github.com/alexcesaro/statsd v2.0.0+incompatible
+	github.com/go-chi/chi v1.5.5
+	github.com/go-chi/cors v1.2.2
 	go.uber.org/zap v1.27.0
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/sys v0.34.0 // indirect

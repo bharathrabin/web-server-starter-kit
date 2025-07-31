@@ -53,7 +53,7 @@ logger:
   component_logging: true
 
 metrics:
-  enabled: true
+  enabled: false
   type: "mock"                    # Use mock for development
   address: "statsd:8125"          # Docker Compose service name
   prefix: "myapp.dev"

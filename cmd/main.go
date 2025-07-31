@@ -1,10 +1,11 @@
-package cmd
+package main
 
 import (
 	"coffee-and-running/src/app"
 	"coffee-and-running/src/config"
 	"coffee-and-running/src/observability/logger"
 	"coffee-and-running/src/observability/metrics"
+	"coffee-and-running/src/storage"
 	"fmt"
 	"log"
 	"os"
@@ -28,7 +29,7 @@ func main() {
 	app.Run()
 }
 
-func BuildApplication(cfg *config.Config) (*app.Application, error) {
+func BuildApplication(cfg *config.Config) (app.Application, error) {
 	lgr, err := logger.NewLogger(cfg.Logger)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build app logger: %w", err)
@@ -37,5 +38,10 @@ func BuildApplication(cfg *config.Config) (*app.Application, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to buuld app metrics agent: %w", err)
 	}
+	engine, err := storage.NewEngine(cfg.Database, lgr, metricsAgent)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build app storage engine: %w", err)
+	}
+	return app.New(cfg, lgr, metricsAgent, engine, nil), nil
 
 }
