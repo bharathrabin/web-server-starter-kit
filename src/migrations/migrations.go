@@ -66,7 +66,7 @@ func (m *Migrator) ensureMigrationsTable(ctx context.Context) error {
 
 // loadMigrations reads all migration files from the migrations directory
 func (m *Migrator) loadMigrations() ([]Migration, error) {
-	var migrations []Migration
+	migrationMap := make(map[int]*Migration)
 
 	err := filepath.WalkDir(m.migrationsDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -78,6 +78,8 @@ func (m *Migrator) loadMigrations() ([]Migration, error) {
 		}
 
 		filename := d.Name()
+
+		// Parse the migration file
 		migration, err := m.parseMigrationFile(path, filename)
 		if err != nil {
 			m.logger.Warn("skipping invalid migration file",
@@ -86,7 +88,20 @@ func (m *Migrator) loadMigrations() ([]Migration, error) {
 			return nil // Continue processing other files
 		}
 
-		migrations = append(migrations, migration)
+		// Get or create migration in map
+		existing, exists := migrationMap[migration.Version]
+		if !exists {
+			migrationMap[migration.Version] = &migration
+		} else {
+			// Merge up/down SQL from separate files
+			if migration.UpSQL != "" {
+				existing.UpSQL = migration.UpSQL
+			}
+			if migration.DownSQL != "" {
+				existing.DownSQL = migration.DownSQL
+			}
+		}
+
 		return nil
 	})
 
@@ -94,7 +109,12 @@ func (m *Migrator) loadMigrations() ([]Migration, error) {
 		return nil, fmt.Errorf("failed to read migrations directory: %w", err)
 	}
 
-	// Sort migrations by version
+	// Convert map to slice and sort by version
+	var migrations []Migration
+	for _, migration := range migrationMap {
+		migrations = append(migrations, *migration)
+	}
+
 	sort.Slice(migrations, func(i, j int) bool {
 		return migrations[i].Version < migrations[j].Version
 	})
@@ -161,52 +181,6 @@ func (m *Migrator) parseMigrationFile(path, filename string) (Migration, error) 
 	}
 
 	return migration, nil
-}
-
-// parseMigrationContent splits migration content into up and down parts
-func (m *Migrator) parseMigrationContent(content string) (upSQL, downSQL string) {
-	lines := strings.Split(content, "\n")
-	var currentSection strings.Builder
-	var inUpSection, inDownSection bool
-
-	for _, line := range lines {
-		trimmed := strings.TrimSpace(line)
-
-		if strings.Contains(trimmed, "-- +migrate Up") {
-			inUpSection = true
-			inDownSection = false
-			currentSection.Reset()
-			continue
-		}
-
-		if strings.Contains(trimmed, "-- +migrate Down") {
-			if inUpSection {
-				upSQL = strings.TrimSpace(currentSection.String())
-			}
-			inUpSection = false
-			inDownSection = true
-			currentSection.Reset()
-			continue
-		}
-
-		if inUpSection || inDownSection {
-			currentSection.WriteString(line + "\n")
-		}
-	}
-
-	// Handle case where we're still in a section at end of file
-	if inUpSection {
-		upSQL = strings.TrimSpace(currentSection.String())
-	} else if inDownSection {
-		downSQL = strings.TrimSpace(currentSection.String())
-	}
-
-	// If no sections found, treat entire content as up migration
-	if upSQL == "" && downSQL == "" {
-		upSQL = strings.TrimSpace(content)
-	}
-
-	return upSQL, downSQL
 }
 
 // getAppliedMigrations returns list of applied migration versions
@@ -348,7 +322,16 @@ func (m *Migrator) applyMigration(ctx context.Context, migration Migration, dire
 	if err != nil {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
-	defer tx.Rollback()
+
+	// Use a variable to track if we should rollback
+	var committed bool
+	defer func() {
+		if !committed {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				m.logger.Error("failed to rollback transaction", zap.Error(rollbackErr))
+			}
+		}
+	}()
 
 	// Execute migration SQL
 	_, err = tx.Exec(ctx, sql)
@@ -376,6 +359,9 @@ func (m *Migrator) applyMigration(ctx context.Context, migration Migration, dire
 	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit migration transaction: %w", err)
 	}
+
+	// Mark as committed so defer won't try to rollback
+	committed = true
 
 	m.logger.Info("migration applied successfully",
 		zap.Int("version", migration.Version),

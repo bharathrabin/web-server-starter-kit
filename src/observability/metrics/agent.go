@@ -42,17 +42,23 @@ func (a *agent) Close() {
 
 // Count implements Agent.
 func (a *agent) Count(bucket string, n interface{}) {
-	a.client.Count(bucket, n)
+	if a.client != nil {
+		a.client.Count(bucket, n)
+	}
 }
 
 // Gauge implements Agent.
 func (a *agent) Gauge(bucket string, value interface{}) {
-	a.client.Gauge(bucket, value)
+	if a.client != nil {
+		a.client.Gauge(bucket, value)
+	}
 }
 
 // Increment implements Agent.
 func (a *agent) Increment(bucket string) {
-	a.client.Increment(bucket)
+	if a.client != nil {
+		a.client.Increment(bucket)
+	}
 }
 
 // IsEnabled implements Agent.
@@ -62,7 +68,9 @@ func (a *agent) IsEnabled() bool {
 
 // Timing implements Agent.
 func (a *agent) Timing(bucket string, value interface{}) {
-	panic("unimplemented")
+	if a.client != nil {
+		a.client.Timing(bucket, value)
+	}
 }
 
 func NewAgent(cfg *config.MetricsConfig, logger *zap.Logger) (Agent, error) {
@@ -71,6 +79,7 @@ func NewAgent(cfg *config.MetricsConfig, logger *zap.Logger) (Agent, error) {
 		return &agent{
 			config: cfg,
 			logger: logger,
+			// client will be nil, but methods will check for nil
 		}, nil
 	}
 	ctx, cancel := context.WithCancel(context.Background())
@@ -139,9 +148,9 @@ func (a *agent) startPeriodicReporting() {
 
 // reportSystemMetrics reports system-level metrics
 func (a *agent) reportSystemMetrics() {
-	// Example system metrics - you can extend this
-	a.client.Gauge("system.uptime", time.Now().Unix())
-	a.client.Increment("system.heartbeat")
-
-	a.logger.Debug("system metrics reported")
+	if a.client != nil {
+		a.client.Gauge("system.uptime", time.Now().Unix())
+		a.client.Increment("system.heartbeat")
+		a.logger.Debug("system metrics reported")
+	}
 }
