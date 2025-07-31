@@ -204,7 +204,7 @@ compose-exec-db: ## Execute command in postgres container
 ## Database Commands
 build-migrate: ## Build migration CLI tool
 	@echo "$(YELLOW)Building migration tool...$(NC)"
-	@go build -o bin/migrate cmd/migrate/main.go
+	@go build -o bin/migrate cmd/migrator/main.go
 	@echo "$(GREEN)Migration tool built: bin/migrate$(NC)"
 
 db-migrate: ## Run database migrations
