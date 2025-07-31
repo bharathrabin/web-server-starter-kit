@@ -5,7 +5,6 @@ import (
 	"coffee-and-running/src/observability/metrics"
 	"coffee-and-running/src/storage"
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -43,7 +42,7 @@ func (a *application) Run() {
 
 	// Start server in a goroutine
 	go func() {
-		log.Printf("Starting server on %s", a.server.Addr)
+		a.logger.Info("Starting server", zap.String("address", a.server.Addr))
 
 		var err error
 		if a.config.Server.TLS.Enabled {
@@ -53,12 +52,12 @@ func (a *application) Run() {
 		}
 
 		if err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Server failed to start: %v", err)
+			a.logger.Fatal("Server failed to start", zap.Error(err))
 		}
 	}()
 	// Wait for interrupt signal
 	<-sigChan
-	log.Println("Shutting down server...")
+	a.logger.Info("Shutting down server...")
 
 	// Create a context with timeout for graceful shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), a.config.Server.ShutdownTimeout)
@@ -66,8 +65,8 @@ func (a *application) Run() {
 
 	// Attempt graceful shutdown
 	if err := a.server.Shutdown(ctx); err != nil {
-		log.Printf("Server forced to shutdown: %v", err)
+		a.logger.Error("Server forced to shutdown", zap.Error(err))
 	} else {
-		log.Println("Server gracefully stopped")
+		a.logger.Info("Server gracefully stopped")
 	}
 }

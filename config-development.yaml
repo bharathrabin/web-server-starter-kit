@@ -29,7 +29,7 @@ server:
 
 database:
   driver: "postgres"
-  host: "postgres"                # Docker Compose service name
+  host: "0.0.0.0"                # Docker Compose service name
   port: 5432
   name: "myapp_dev"
   user: "postgres"
@@ -49,7 +49,7 @@ logger:
   output: "stdout"
   development: true
   disable_caller: false
-  disable_stacktrace: false
+  disable_stacktrace: true
   component_logging: true
 
 metrics:

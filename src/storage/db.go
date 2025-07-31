@@ -32,7 +32,6 @@ type engine struct {
 
 // NewEngineWithComponent creates a new instrumented database engine with custom component name
 func NewEngine(cfg *config.DatabaseConfig, logger *zap.Logger, stats metrics.Agent) (Engine, error) {
-	componentLogger := logger.With(zap.String("component", "db_engine"))
 
 	// Get the DSN from the config
 	dsn := cfg.GetDSN()
@@ -41,7 +40,7 @@ func NewEngine(cfg *config.DatabaseConfig, logger *zap.Logger, stats metrics.Age
 	}
 	db, err := sql.Open(cfg.Driver, dsn)
 	if err != nil {
-		componentLogger.Error("failed to open database connection",
+		logger.Error("failed to open database connection",
 			zap.Error(err),
 			zap.String("driver", cfg.Driver))
 		return nil, fmt.Errorf("failed to open database: %w", err)
@@ -66,20 +65,20 @@ func NewEngine(cfg *config.DatabaseConfig, logger *zap.Logger, stats metrics.Age
 
 	if err := db.PingContext(ctx); err != nil {
 		db.Close()
-		componentLogger.Error("failed to ping database",
+		logger.Error("failed to ping database",
 			zap.Error(err),
 			zap.String("driver", cfg.Driver))
 		return nil, fmt.Errorf("failed to ping database: %w", err)
 	}
 
-	componentLogger.Info("database connection established successfully",
+	logger.Info("database connection established successfully",
 		zap.String("driver", cfg.Driver),
 		zap.String("host", cfg.Host),
 		zap.Int("port", cfg.Port),
 		zap.String("database", cfg.Name))
 
 	return &engine{
-		logger: componentLogger,
+		logger: logger,
 		db:     db,
 		stats:  stats,
 	}, nil

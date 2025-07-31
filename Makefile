@@ -33,7 +33,8 @@ clean:
 	rm -rf bin/
 	rm -rf third_party/
 
-
+# Download third-party and run proto
 gen: third-party proto
 
+# Clean then run Gen
 dev: clean gen build
