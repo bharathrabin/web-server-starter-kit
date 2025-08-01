@@ -2,16 +2,16 @@
 
 A production-ready Go web server starter kit that eliminates the boilerplate setup time. Clone, configure, and start building your business logic immediately instead of spending hours wiring up logging, metrics, database connections, and other infrastructure components.
 
-## 🚀 Features
+## Features
 
 ### Core Infrastructure
-- **🪵 Structured Logging** - Zap-based logger with configurable formats, outputs, and log rotation
-- **📊 Metrics & Observability** - StatsD integration with comprehensive instrumentation
-- **🗄️ Database Layer** - Instrumented PostgreSQL engine with connection pooling and transaction support
-- **🌐 HTTP Server** - Chi router with CORS, middleware, and TLS support
-- **🔄 Graceful Shutdown** - Proper cleanup and shutdown handling
-- **🐳 Docker Ready** - Multi-stage Dockerfile and docker-compose setup
-- **📡 gRPC Support** - Protobuf generation and gRPC server capabilities
+- ** Structured Logging** - Zap-based logger with configurable formats, outputs, and log rotation
+- ** Metrics & Observability** - StatsD integration with comprehensive instrumentation
+- ** Database Layer** - Instrumented PostgreSQL engine with connection pooling and transaction support
+- ** HTTP Server** - Chi router with CORS, middleware, and TLS support
+- ** Graceful Shutdown** - Proper cleanup and shutdown handling
+- ** Docker Ready** - Multi-stage Dockerfile and docker-compose setup
+- ** gRPC Support** - Protobuf generation and gRPC server capabilities
 
 ### Production Features
 - Configuration-driven setup via YAML
@@ -22,7 +22,7 @@ A production-ready Go web server starter kit that eliminates the boilerplate set
 - Health checks and monitoring
 - Database migrations support
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── src/
@@ -44,7 +44,7 @@ A production-ready Go web server starter kit that eliminates the boilerplate set
 └── config-development.yaml    # Development configuration
 ```
 
-## 🛠️ Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Go 1.21+
@@ -119,7 +119,7 @@ make compose-logs
 make dev-reset
 ```
 
-## 🏗️ Available Make Commands
+##  Available Make Commands
 
 ### Development
 ```bash
@@ -207,7 +207,7 @@ make db-migrate-down
 make db-reset
 ```
 
-## 🔧 Core Components
+##  Core Components
 
 ### Logger
 Structured logging with Zap, supporting:
@@ -271,7 +271,7 @@ router.Route("/api/v1", func(r chi.Router) {
 })
 ```
 
-## 🐳 Docker & Deployment
+##  Docker & Deployment
 
 ### Development with Docker Compose
 ```bash
@@ -299,7 +299,7 @@ make docker-build
 export CONFIG_FILE=/path/to/config.yaml
 ```
 
-## 🏃‍♂️ Adding Your Business Logic
+##  Adding Your Business Logic
 
 ### 1. Add Routes
 Edit `src/server/routes.go` (create if needed):
@@ -343,7 +343,7 @@ func (u *UserService) GetUsers(ctx context.Context) ([]User, error) {
 }
 ```
 
-## 🧪 Testing
+##  Testing
 
 ```bash
 # Run all tests
@@ -374,7 +374,7 @@ func TestUserHandler_GetUsers(t *testing.T) {
 }
 ```
 
-## 📊 Monitoring & Observability
+##  Monitoring & Observability
 
 ### Logs
 - Structured JSON logs in production
@@ -395,7 +395,7 @@ The starter kit automatically tracks:
 curl http://localhost:3000/health
 ```
 
-## 🔒 Security Features
+##  Security Features
 
 - TLS/SSL support with modern cipher suites
 - CORS configuration
@@ -403,7 +403,7 @@ curl http://localhost:3000/health
 - SQL injection protection with prepared statements
 - Structured logging (no sensitive data leakage)
 
-## 🚀 Deployment
+##  Deployment
 
 ### Using Docker
 ```bash
@@ -427,7 +427,7 @@ make build
 CONFIG_FILE=config-production.yaml ./bin/myapp
 ```
 
-## 🤝 Contributing
+##  Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -439,7 +439,7 @@ CONFIG_FILE=config-production.yaml ./bin/myapp
 
 MIT License - see LICENSE file for details. -->
 
-## 🆘 Support
+##  Support
 
 - Create an issue for bugs or feature requests
 - Check the Makefile for all available commands: `make help`
