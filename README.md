@@ -5,13 +5,13 @@ A production-ready Go web server starter kit that eliminates the boilerplate set
 ## Features
 
 ### Core Infrastructure
-- ** Structured Logging** - Zap-based logger with configurable formats, outputs, and log rotation
-- ** Metrics & Observability** - StatsD integration with comprehensive instrumentation
-- ** Database Layer** - Instrumented PostgreSQL engine with connection pooling and transaction support
-- ** HTTP Server** - Chi router with CORS, middleware, and TLS support
-- ** Graceful Shutdown** - Proper cleanup and shutdown handling
-- ** Docker Ready** - Multi-stage Dockerfile and docker-compose setup
-- ** gRPC Support** - Protobuf generation and gRPC server capabilities
+- **Structured Logging** - Zap-based logger with configurable formats, outputs, and log rotation
+- **Metrics & Observability** - StatsD integration with comprehensive instrumentation
+- **Database Layer** - Instrumented PostgreSQL engine with connection pooling and transaction support
+- **HTTP Server** - Chi router with CORS, middleware, and TLS support
+- **Graceful Shutdown** - Proper cleanup and shutdown handling
+- **Docker Ready** - Multi-stage Dockerfile and docker-compose setup
+- **gRPC Support** - Protobuf generation and gRPC server capabilities
 
 ### Production Features
 - Configuration-driven setup via YAML
